@@ -22,7 +22,7 @@ func BuildPost(avatar, username, post, text string) (image.Image, error) {
 		return nil, err
 	}
 
-	scaledImage := _fitPost(postImage, header.Bounds().Max.X)
+	scaledImage := _fitPost(postImage, header.Bounds().Max.X-6)
 
 	headerTop := header.Bounds().Max.Y
 	postTop := scaledImage.Bounds().Max.Y
@@ -30,8 +30,10 @@ func BuildPost(avatar, username, post, text string) (image.Image, error) {
 
 	combined := image.NewRGBA(image.Rect(0, 0, header.Bounds().Max.X, headerTop+postTop+footerTop))
 
-	draw.Draw(combined, header.Bounds(), header, image.Point{}, draw.Src)
-	draw.Draw(combined, scaledImage.Bounds().Add(image.Point{X: 0, Y: headerTop}), scaledImage, image.Point{}, draw.Over)
+	draw.Draw(combined, combined.Bounds(), image.White, image.Point{}, draw.Src)
+
+	draw.Draw(combined, header.Bounds(), header, image.Point{}, draw.Over)
+	draw.Draw(combined, scaledImage.Bounds().Add(image.Point{X: 3, Y: headerTop}), scaledImage, image.Point{}, draw.Over)
 	draw.Draw(combined, footer.Bounds().Add(image.Point{X: 0, Y: headerTop + postTop}), footer, image.Point{}, draw.Over)
 
 	return combined, nil
