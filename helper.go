@@ -3,6 +3,8 @@ package insta_go
 import (
 	"bytes"
 	"image"
+	_ "image/gif"
+	_ "image/jpeg"
 	"image/png"
 	"io"
 	"net/http"
@@ -26,7 +28,12 @@ func DownloadImage(url string) (image.Image, error) {
 		return nil, err
 	}
 
-	return png.Decode(bytes.NewReader(b))
+	img, _, err := image.Decode(bytes.NewReader(b))
+	if err != nil {
+		return nil, err
+	}
+
+	return img, nil
 }
 
 func SavePNG(img image.Image, path string) error {
