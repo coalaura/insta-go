@@ -2,9 +2,10 @@ package insta_go
 
 import (
 	_ "embed"
-	"github.com/nfnt/resize"
 	"image"
 	"image/draw"
+
+	"github.com/nfnt/resize"
 )
 
 var (
@@ -35,7 +36,9 @@ func BuildHeader(username, avatar string) (image.Image, error) {
 	draw.Draw(combined, scaledAvatar.Bounds().Add(avatarPosition), scaledAvatar, image.Point{}, draw.Src)
 	draw.Draw(combined, header.Bounds(), header, image.Point{}, draw.Over)
 
-	err = WriteText(combined, usernamePosition, 26, username)
+	pos := usernamePosition
+
+	err = WriteText(combined, &pos, 26, username, image.Black)
 	if err != nil {
 		return nil, err
 	}

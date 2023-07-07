@@ -2,10 +2,11 @@ package insta_go
 
 import (
 	_ "embed"
+	"image"
+
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
-	"image"
 )
 
 var (
@@ -28,7 +29,7 @@ func _loadFont() error {
 	return nil
 }
 
-func WriteText(img *image.RGBA, pos image.Point, size float64, text string) error {
+func WriteText(img *image.RGBA, pos *image.Point, size float64, text string, color *image.Uniform) error {
 	err := _loadFont()
 	if err != nil {
 		return err
@@ -36,7 +37,7 @@ func WriteText(img *image.RGBA, pos image.Point, size float64, text string) erro
 
 	d := &font.Drawer{
 		Dst: img,
-		Src: image.Black,
+		Src: color,
 		Face: truetype.NewFace(fontFace, &truetype.Options{
 			Size:    size,
 			DPI:     72,
@@ -50,6 +51,8 @@ func WriteText(img *image.RGBA, pos image.Point, size float64, text string) erro
 	}
 
 	d.DrawString(text)
+
+	pos.X += d.MeasureString(text).Ceil()
 
 	return nil
 }

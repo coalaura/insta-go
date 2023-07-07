@@ -3,6 +3,7 @@ package insta_go
 import (
 	_ "embed"
 	"image"
+	"image/color"
 	"image/draw"
 	"strings"
 )
@@ -40,9 +41,19 @@ func BuildFooter(text string) (image.Image, error) {
 
 	pos := footerPosition.Add(image.Point{X: 0, Y: footer.Bounds().Max.Y})
 
-	err = WriteText(combined, pos, 26, text)
-	if err != nil {
-		return nil, err
+	words := SplitHashtags(text)
+
+	for _, word := range words {
+		c := image.Black
+
+		if word[0] == '#' {
+			c = image.NewUniform(color.RGBA{0, 125, 209, 255})
+		}
+
+		err = WriteText(combined, &pos, 26, word, c)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return combined, nil

@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 )
 
 func LoadPNG(b []byte) (image.Image, error) {
@@ -50,4 +51,42 @@ func SavePNG(img image.Image, path string) error {
 	}
 
 	return nil
+}
+
+func SplitHashtags(text string) []string {
+	var (
+		isHash  bool
+		current string
+		result  []string
+	)
+
+	for _, character := range text {
+		if character == '#' {
+			if current != "" {
+				result = append(result, current)
+			}
+
+			current = "#"
+			isHash = true
+		} else {
+			if isHash {
+				rgx := regexp.MustCompile(`[^\w]`)
+
+				if rgx.MatchString(string(character)) {
+					result = append(result, current)
+
+					current = ""
+					isHash = false
+				}
+			}
+
+			current += string(character)
+		}
+	}
+
+	if current != "" {
+		result = append(result, current)
+	}
+
+	return result
 }
