@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"image"
 	"image/draw"
+	"math"
 
 	"github.com/nfnt/resize"
 )
@@ -29,6 +30,8 @@ func BuildHeader(username, avatar string) (image.Image, error) {
 		return nil, err
 	}
 
+	avatarImage = _forceSquare(avatarImage)
+
 	scaledAvatar := resize.Resize(uint(avatarSize.X), uint(avatarSize.Y), avatarImage, resize.Lanczos3)
 
 	combined := image.NewRGBA(header.Bounds())
@@ -44,4 +47,24 @@ func BuildHeader(username, avatar string) (image.Image, error) {
 	}
 
 	return combined, nil
+}
+
+func _forceSquare(img image.Image) image.Image {
+	width := img.Bounds().Dx()
+	height := img.Bounds().Dy()
+
+	if width != height {
+		min := math.Min(float64(width), float64(height))
+
+		x := (float64(width) - min) / 2
+		y := (float64(height) - min) / 2
+
+		crop := image.NewRGBA(image.Rect(0, 0, int(min), int(min)))
+
+		draw.Draw(crop, crop.Bounds(), img, image.Point{X: int(x), Y: int(y)}, draw.Src)
+
+		return crop
+	}
+
+	return img
 }

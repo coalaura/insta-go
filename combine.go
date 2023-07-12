@@ -1,12 +1,13 @@
 package insta_go
 
 import (
-	"github.com/nfnt/resize"
 	"image"
 	"image/draw"
+
+	"github.com/nfnt/resize"
 )
 
-func BuildPost(avatar, username, post, text string) (image.Image, error) {
+func BuildPost(avatar, username, post, text string, forceSquare bool) (image.Image, error) {
 	header, err := BuildHeader(username, avatar)
 	if err != nil {
 		return nil, err
@@ -20,6 +21,10 @@ func BuildPost(avatar, username, post, text string) (image.Image, error) {
 	postImage, err := DownloadImage(post)
 	if err != nil {
 		return nil, err
+	}
+
+	if forceSquare {
+		postImage = _forceSquare(postImage)
 	}
 
 	scaledImage := _fitPost(postImage, header.Bounds().Max.X-6)
