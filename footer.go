@@ -22,6 +22,8 @@ func BuildFooter(text string) (image.Image, error) {
 		return nil, err
 	}
 
+	text = strings.TrimSpace(text)
+
 	if text == "" {
 		return footer, nil
 	}
